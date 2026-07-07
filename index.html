@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wudu Robot — Tech Titans</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Nunito:wght@600;700;800;900&display=swap');
+
+:root{
+  --olive:#6f7d3e; --olive-deep:#52602b; --cream:#f7f4ec; --ink:#2c2a26;
+  --sun:#e9a23b; --paper:#ffffff; --grey:#8a857c; --soft:#eef3e2;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+header{text-align:center;padding:26px 16px 10px}
+header h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(28px,5vw,44px);color:var(--olive-deep)}
+header h1 .bot{color:var(--sun)}
+header p{font-weight:800;color:var(--grey);margin-top:6px;font-size:clamp(14px,2vw,17px)}
+
+.wrap{display:flex;gap:22px;max-width:1100px;margin:14px auto 40px;padding:0 16px;align-items:flex-start;flex-wrap:wrap}
+.panel{background:var(--paper);border-radius:20px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.07)}
+
+/* LEFT: program builder */
+.builder{flex:1;min-width:300px}
+.builder h2, .stage h2{font-family:'Fraunces',serif;font-weight:900;font-size:20px;color:var(--olive-deep);margin-bottom:10px}
+.slots{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.slot{display:flex;align-items:center;gap:10px;background:var(--soft);border:2.5px dashed #c9cdb4;border-radius:12px;min-height:46px;padding:5px 10px;transition:.2s}
+.slot .num{background:var(--olive);color:#fff;font-weight:900;width:28px;height:28px;min-width:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+.slot.filled{border-style:solid;border-color:var(--olive);background:#fff;cursor:pointer}
+.slot.filled:hover{background:#fdf6e8}
+.slot .lbl{font-weight:800;font-size:15px}
+.slot .hint{color:#b8b3a8;font-weight:700;font-size:13px}
+.slot.err{border-color:var(--sun);background:#fdf1dc;animation:wob .5s}
+@keyframes wob{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.pool h3{width:100%;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--grey);font-weight:900;margin-bottom:2px}
+.block{background:var(--olive);color:#fff;font-weight:800;font-size:14px;padding:10px 14px;border-radius:12px;cursor:grab;border:none;box-shadow:0 4px 10px rgba(82,96,43,.25);transition:.15s;user-select:none}
+.block:hover{transform:translateY(-2px);background:var(--olive-deep)}
+.block:active{cursor:grabbing}
+.block:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.block.dragging{opacity:.5}
+
+.controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+button.ctl{font-family:'Nunito';font-weight:900;font-size:16px;padding:12px 22px;border:none;border-radius:14px;cursor:pointer;transition:.15s}
+.run{background:var(--sun);color:var(--ink);box-shadow:0 5px 14px rgba(233,162,59,.4)}
+.run:hover{transform:translateY(-2px)}
+.run:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.reset{background:#e7e3d6;color:var(--ink)}
+.reset:hover{background:#ddd8c8}
+button.ctl:focus-visible{outline:3px solid var(--olive);outline-offset:2px}
+
+/* RIGHT: robot stage */
+.stage{flex:1;min-width:300px;text-align:center}
+.robot-area{position:relative;height:290px;display:flex;align-items:center;justify-content:center}
+
+/* robot */
+.robot{position:relative;width:150px;transition:.3s}
+.antenna{width:6px;height:26px;background:var(--grey);margin:0 auto;border-radius:4px;position:relative}
+.antenna::after{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--sun);animation:blinkTop 2.4s infinite}
+@keyframes blinkTop{50%{opacity:.4}}
+.head{width:104px;height:86px;background:linear-gradient(#fff,#eceadf);border:4px solid var(--olive-deep);border-radius:24px;margin:0 auto;position:relative;display:flex;align-items:center;justify-content:center;gap:16px}
+.eye{width:16px;height:16px;background:var(--ink);border-radius:50%;transition:.2s}
+.robot.happy .eye{height:6px;border-radius:6px;transform:translateY(4px);background:var(--olive-deep)}
+.robot.confused .eye{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.robot.confused .eye::after{content:'';display:block;width:6px;height:6px;background:#fff;border-radius:50%}
+.mouth{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:30px;height:8px;border-radius:0 0 20px 20px;background:var(--ink);transition:.2s}
+.robot.happy .mouth{height:14px;width:40px}
+.robot.confused .mouth{width:14px;height:14px;border-radius:50%}
+.body{width:118px;height:96px;background:linear-gradient(#fff,#e4e1d3);border:4px solid var(--olive-deep);border-radius:20px;margin:6px auto 0;position:relative;display:flex;align-items:center;justify-content:center}
+.chest{width:44px;height:44px;border-radius:50%;background:var(--soft);border:3px solid var(--olive);display:flex;align-items:center;justify-content:center;font-size:20px}
+.arm{position:absolute;top:8px;width:14px;height:64px;background:var(--olive-deep);border-radius:8px;transition:.4s;transform-origin:top center}
+.arm.l{left:-20px}
+.arm.r{right:-20px}
+.robot.confused .arm.r{transform:rotate(150deg) translateY(-8px);animation:scratch .6s ease-in-out infinite alternate}
+@keyframes scratch{to{transform:rotate(165deg) translateY(-12px)}}
+.legs{display:flex;justify-content:center;gap:16px;margin-top:4px}
+.leg{width:16px;height:34px;background:var(--olive-deep);border-radius:8px}
+
+.qmarks{position:absolute;top:-6px;right:6px;font-size:30px;font-weight:900;color:var(--sun);opacity:0;font-family:'Fraunces',serif}
+.robot.confused ~ .qmarks, .robot-area.show-q .qmarks{opacity:1;animation:floatQ 1.2s ease-in-out infinite}
+@keyframes floatQ{50%{transform:translateY(-10px)}}
+
+.action-bubble{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--paper);border:3px solid var(--olive);border-radius:16px;padding:8px 16px;font-weight:900;font-size:16px;min-width:180px;opacity:0;transition:.25s;box-shadow:0 6px 18px rgba(0,0,0,.1)}
+.action-bubble.show{opacity:1}
+.action-bubble .emo{font-size:24px;display:block}
+
+.status{min-height:54px;font-weight:800;font-size:16px;padding:10px 14px;border-radius:14px;background:var(--soft);margin-top:6px;transition:.3s}
+.status.good{background:#e3efd2;color:var(--olive-deep)}
+.status.bad{background:#fdf1dc;color:#9a6a12}
+
+/* code reveal */
+.code-panel{display:none;text-align:left;background:#2c2a26;color:#e9e6da;border-radius:16px;padding:16px 18px;margin-top:14px;font-family:monospace;font-size:14px;line-height:1.9}
+.code-panel.show{display:block;animation:fadeUp .5s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+.code-panel .cmt{color:#8a857c}
+.code-panel .fn{color:#e9a23b}
+.code-panel .kw{color:#9fbf6a}
+.code-title{font-family:'Nunito';font-weight:900;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--sun);margin-bottom:6px}
+
+/* confetti */
+.confetti{position:fixed;top:-10px;font-size:22px;animation:fall linear forwards;z-index:99;pointer-events:none}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+
+footer{text-align:center;padding:0 16px 30px;color:var(--grey);font-weight:800;font-size:13px}
+
+@media (max-width:720px){.wrap{flex-direction:column}.stage{order:-1}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Wudu <span class="bot">Robot</span> 🤖</h1>
+  <p>The robot does EXACTLY what you tell it — no more, no less. Program it!</p>
+</header>
+
+<div class="wrap">
+
+  <!-- BUILDER -->
+  <div class="panel builder">
+    <h2>Your Program</h2>
+    <div class="slots" id="slots"></div>
+    <div class="pool" id="pool">
+      <h3>Instruction blocks — tap or drag into a slot</h3>
+    </div>
+    <div class="controls">
+      <button class="ctl run" id="runBtn" disabled>▶ RUN PROGRAM</button>
+      <button class="ctl reset" id="resetBtn">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="panel stage">
+    <h2>Robot Stage</h2>
+    <div class="robot-area" id="robotArea">
+      <div class="action-bubble" id="bubble"><span class="emo" id="bubbleEmo"></span><span id="bubbleTxt"></span></div>
+      <div class="robot" id="robot">
+        <div class="antenna"></div>
+        <div class="head"><div class="eye"></div><div class="eye"></div><div class="mouth"></div></div>
+        <div class="body">
+          <div class="arm l"></div><div class="arm r"></div>
+          <div class="chest" id="chest">🤖</div>
+        </div>
+        <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+      </div>
+      <div class="qmarks" id="qmarks">? ?</div>
+    </div>
+    <div class="status" id="status">Build your program on the left, then press RUN.</div>
+    <div class="code-panel" id="codePanel"></div>
+  </div>
+
+</div>
+
+<footer>Tech Titans · Al Hikmah — remember: a computer can't guess what you meant. It only follows your steps.</footer>
+
+<script>
+const CORRECT = [
+  {id:'niyyah',  label:'Intention (Niyyah)',        emo:'🤍', act:'Making intention…'},
+  {id:'bismillah',label:'Bismillah',                emo:'🗣️', act:'Saying Bismillah…'},
+  {id:'hands',   label:'Wash Hands',                emo:'🤲', act:'Washing hands…'},
+  {id:'mouthnose',label:'Mouth and Nose',           emo:'💧', act:'Rinsing mouth & nose…'},
+  {id:'face',    label:'Wash Face',                 emo:'😊', act:'Washing face…'},
+  {id:'arms',    label:'Wash Arms',                 emo:'💪', act:'Washing arms…'},
+  {id:'head',    label:'Wipe Head & Ears (once)',   emo:'👂', act:'Wiping head & ears — once…'},
+  {id:'feet',    label:'Wash Feet',                 emo:'🦶', act:'Washing feet…'}
+];
+const FN = {niyyah:'make_intention()',bismillah:'say_bismillah()',hands:'wash_hands()',mouthnose:'rinse_mouth_and_nose()',face:'wash_face()',arms:'wash_arms()',head:'wipe_head_and_ears(times=1)',feet:'wash_feet()'};
+
+const slotsEl=document.getElementById('slots'), poolEl=document.getElementById('pool');
+const runBtn=document.getElementById('runBtn'), resetBtn=document.getElementById('resetBtn');
+const robot=document.getElementById('robot'), bubble=document.getElementById('bubble');
+const bubbleEmo=document.getElementById('bubbleEmo'), bubbleTxt=document.getElementById('bubbleTxt');
+const statusEl=document.getElementById('status'), codePanel=document.getElementById('codePanel');
+const qmarks=document.getElementById('qmarks'), chest=document.getElementById('chest');
+
+let program=new Array(8).fill(null);
+let running=false;
+
+// build slots
+for(let i=0;i<8;i++){
+  const s=document.createElement('div');
+  s.className='slot'; s.dataset.i=i;
+  s.innerHTML=`<div class="num">${i+1}</div><span class="hint">drop a block here</span>`;
+  s.addEventListener('click',()=>{ if(running)return; if(program[i]){ returnToPool(program[i]); program[i]=null; renderSlot(i); refreshRun(); }});
+  s.addEventListener('dragover',e=>{e.preventDefault()});
+  s.addEventListener('drop',e=>{
+    e.preventDefault(); if(running)return;
+    const id=e.dataTransfer.getData('text/plain');
+    placeBlock(id,i);
+  });
+  slotsEl.appendChild(s);
+}
+
+// build pool (shuffled)
+function shuffled(arr){return [...arr].sort(()=>Math.random()-.5)}
+function buildPool(){
+  poolEl.querySelectorAll('.block').forEach(b=>b.remove());
+  shuffled(CORRECT).forEach(step=>{
+    poolEl.appendChild(makeBlock(step));
+  });
+}
+function makeBlock(step){
+  const b=document.createElement('button');
+  b.className='block'; b.textContent=step.label; b.dataset.id=step.id; b.draggable=true;
+  b.addEventListener('click',()=>{ if(running)return;
+    const i=program.indexOf(null); if(i===-1)return;
+    placeBlock(step.id,i);
+  });
+  b.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',step.id);b.classList.add('dragging')});
+  b.addEventListener('dragend',()=>b.classList.remove('dragging'));
+  return b;
+}
+function placeBlock(id,i){
+  if(program[i]) returnToPool(program[i]);
+  // remove from any other slot
+  const prev=program.indexOf(id); if(prev>-1){program[prev]=null;renderSlot(prev);}
+  program[i]=id;
+  const blockEl=poolEl.querySelector(`.block[data-id="${id}"]`);
+  if(blockEl)blockEl.remove();
+  renderSlot(i); refreshRun();
+}
+function returnToPool(id){
+  const step=CORRECT.find(s=>s.id===id);
+  poolEl.appendChild(makeBlock(step));
+}
+function renderSlot(i){
+  const s=slotsEl.children[i];
+  s.classList.remove('err');
+  if(program[i]){
+    const step=CORRECT.find(x=>x.id===program[i]);
+    s.classList.add('filled');
+    s.innerHTML=`<div class="num">${i+1}</div><span class="lbl">${step.label}</span>`;
+  }else{
+    s.classList.remove('filled');
+    s.innerHTML=`<div class="num">${i+1}</div><span class="hint">drop a block here</span>`;
+  }
+}
+function refreshRun(){ runBtn.disabled = program.includes(null) || running; }
+
+function setStatus(msg,cls){statusEl.className='status'+(cls?' '+cls:'');statusEl.textContent=msg;}
+function showBubble(emo,txt){bubbleEmo.textContent=emo;bubbleTxt.textContent=txt;bubble.classList.add('show');}
+function hideBubble(){bubble.classList.remove('show');}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function run(){
+  running=true; refreshRun();
+  robot.className='robot'; qmarks.style.opacity=0; codePanel.classList.remove('show');
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('err'));
+  setStatus('Robot is following your program…');
+  chest.textContent='⚙️';
+
+  for(let i=0;i<8;i++){
+    const step=CORRECT.find(s=>s.id===program[i]);
+    showBubble(step.emo, step.act);
+    await wait(1400);
+    if(program[i]!==CORRECT[i].id){
+      // confused moment
+      hideBubble(); await wait(200);
+      robot.classList.add('confused');
+      qmarks.style.opacity=1;
+      chest.textContent='❓';
+      slotsEl.children[i].classList.add('err');
+      setStatus(`Hmm… I did EXACTLY what you told me — but after step ${i+1}, something feels wrong. Check my instructions!`,'bad');
+      running=false; refreshRun();
+      return;
+    }
+  }
+  // success
+  hideBubble();
+  robot.classList.add('happy');
+  chest.textContent='✅';
+  setStatus('MashaAllah! Your program works — the robot completed wudu perfectly! 🎉','good');
+  confetti();
+  revealCode();
+  running=false; refreshRun();
+}
+
+function revealCode(){
+  let html='<div class="code-title">Behind the curtain — what the robot actually read</div>';
+  html+='<span class="cmt">// your blocks became CODE:</span><br>';
+  program.forEach((id,i)=>{
+    html+=`<span class="kw">step ${i+1}:</span> <span class="fn">${FN[id]}</span><br>`;
+  });
+  codePanel.innerHTML=html;
+  codePanel.classList.add('show');
+}
+
+function confetti(){
+  const emojis=['🎉','⭐','💧','✨','🟢'];
+  for(let i=0;i<26;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    c.style.left=Math.random()*100+'vw';
+    c.style.animationDuration=(2+Math.random()*2)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4500);
+  }
+}
+
+runBtn.addEventListener('click',run);
+resetBtn.addEventListener('click',()=>{
+  if(running)return;
+  program=new Array(8).fill(null);
+  for(let i=0;i<8;i++)renderSlot(i);
+  buildPool(); refreshRun();
+  robot.className='robot'; chest.textContent='🤖'; qmarks.style.opacity=0;
+  hideBubble(); codePanel.classList.remove('show');
+  setStatus('Build your program on the left, then press RUN.');
+});
+
+buildPool(); refreshRun();
+</script>
+</body>
+</html>
