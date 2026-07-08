@@ -6,7 +6,7 @@ Built for the *Tech Titans* summer camp at Al Hikmah International Private Train
 
 ## Live Demo
 
-▶️ **[Play the Wudu Robot](https://YOUR-USERNAME.github.io/wudu-robot/)**
+▶️ **[Play the Wudu Robot](https://dataworksjouhar.github.io/wudu-robot/)**
 
 *(Replace the link above with your real GitHub Pages URL once published — see setup below.)*
 
